@@ -17,17 +17,11 @@ export const NAV_DATA = [
         items: [],
       },
       {
-        title: "City Dashboard",
-        url: "/city-dashboard",
-        icon: Icons.PieChart,
-        items: [],
-      },
-      {
         title: "Route Planning",
         url: "/route-planning",
-        icon: Icons.Table,
+        icon: Icons.FourCircle,
         items: [],
-      },
+      },      
     ],
   },
 ];
