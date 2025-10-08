@@ -4,8 +4,8 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { NAV_DATA } from "./data";
+import { useCallback, useEffect, useState } from "react";
+import { NAV_DATA, type NavItem } from "./data";
 import { ArrowLeftIcon, ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
@@ -15,29 +15,36 @@ export function Sidebar() {
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  const toggleExpanded = (title: string) => {
+  const toggleExpanded = useCallback((title: string) => {
     setExpandedItems((prev) => (prev.includes(title) ? [] : [title]));
 
     // Uncomment the following line to enable multiple expanded items
     // setExpandedItems((prev) =>
     //   prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
     // );
-  };
+  }, []);
 
   useEffect(() => {
     // Keep collapsible open, when it's subpage is active
     NAV_DATA.some((section) => {
       return section.items.some((item) => {
-        return item.items.some((subItem) => {
-          if (subItem.url === pathname) {
-            if (!expandedItems.includes(item.title)) {
-              toggleExpanded(item.title);
-            }
+        // Check if item has sub-items (collapsible)
+        if ('items' in item && item.items && item.items.length > 0) {
+          return item.items.some((subItem) => {
+            if (subItem.url === pathname) {
+              setExpandedItems((prev) => {
+                if (!prev.includes(item.title)) {
+                  return [item.title];
+                }
+                return prev;
+              });
 
-            // Break the loop
-            return true;
-          }
-        });
+              // Break the loop
+              return true;
+            }
+          });
+        }
+        return false;
       });
     });
   }, [pathname]);
@@ -97,7 +104,7 @@ export function Sidebar() {
                   <ul className="space-y-2">
                     {section.items.map((item) => (
                       <li key={item.title}>
-                        {item.items.length ? (
+                        {'items' in item && item.items && item.items.length > 0 ? (
                           <div>
                             <MenuItem
                               isActive={item.items.some(
@@ -142,29 +149,19 @@ export function Sidebar() {
                             )}
                           </div>
                         ) : (
-                          (() => {
-                            const href =
-                              "url" in item
-                                ? item.url + ""
-                                : "/" +
-                                  item.title.toLowerCase().split(" ").join("-");
+                          <MenuItem
+                            className="flex items-center gap-3 py-3"
+                            as="link"
+                            href={item.url}
+                            isActive={pathname === item.url}
+                          >
+                            <item.icon
+                              className="size-6 shrink-0"
+                              aria-hidden="true"
+                            />
 
-                            return (
-                              <MenuItem
-                                className="flex items-center gap-3 py-3"
-                                as="link"
-                                href={href}
-                                isActive={pathname === href}
-                              >
-                                <item.icon
-                                  className="size-6 shrink-0"
-                                  aria-hidden="true"
-                                />
-
-                                <span>{item.title}</span>
-                              </MenuItem>
-                            );
-                          })()
+                            <span>{item.title}</span>
+                          </MenuItem>
                         )}
                       </li>
                     ))}
