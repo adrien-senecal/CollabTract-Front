@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CitySearchForm, CitySearchResults } from "@/components/CitySearch";
 import { CityResult } from "@/types/city-search";
 
 export default function CitySearchPage() {
+  const router = useRouter();
   const [results, setResults] = useState<CityResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,8 +27,15 @@ export default function CitySearchPage() {
 
   const handleCitySelect = (city: CityResult) => {
     setSelectedCity(city);
-    // You can add additional logic here, such as navigation or storing the selection
     console.log('Selected city:', city);
+    
+    // Navigate to route planning page with city data as URL parameters
+    const params = new URLSearchParams({
+      city_name: city.nom_standard,
+      dep_code: city.dep_code
+    });
+    
+    router.push(`/route-planning?${params.toString()}`);
   };
 
   return (

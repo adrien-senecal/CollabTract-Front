@@ -1,85 +1,140 @@
-# NextAdmin - Next.js Admin Dashboard Template and Components
+# CollabTract FrontEnd
 
-**NextAdmin** is a Free, open-source Next.js admin dashboard toolkit featuring 200+ UI components and templates that come with pre-built elements, components, pages, high-quality design, integrations, and much more to help you create powerful admin dashboards with ease.
+**Smart Door-to-Door and Flyering Route Planner**
 
+CollabTract is a modern web application designed to help optimize door-to-door distribution routes and flyering campaigns. Built with Next.js and TypeScript, it provides an intuitive interface for planning and managing distribution routes efficiently.
 
-[![nextjs admin template](https://cdn.pimjo.com/nextadmin-2.png)](https://nextadmin.co/)
+## 🚀 Features
 
+- **Route Planning**: Optimize door-to-door distribution routes
+- **Flyering Campaigns**: Plan and manage flyering campaigns
+- **Interactive Maps**: Visual route planning with interactive maps
+- **City Search**: Advanced city search functionality
+- **Real-time Analytics**: Track campaign performance with charts and metrics
+- **Responsive Design**: Mobile-first design for field workers
+- **Dark/Light Mode**: Theme switching for better user experience
 
-**NextAdmin** provides you with a diverse set of dashboard UI components, elements, examples and pages necessary for creating top-notch admin panels or dashboards with **powerful** features and integrations. Whether you are working on a complex web application or a basic website, **NextAdmin** has got you covered.
+## 🛠️ Tech Stack
 
-### [✨ Visit Website](https://nextadmin.co/)
-### [🚀 Live Demo](https://demo.nextadmin.co/)
-### [📖 Docs](https://docs.nextadmin.co/)
+- **Framework**: Next.js 15.5.4
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Charts**: ApexCharts
+- **Maps**: JSVectorMap
+- **Package Manager**: pnpm
+- **Deployment**: Docker support
 
-By leveraging the latest features of **Next.js 14** and key functionalities like **server-side rendering (SSR)**, **static site generation (SSG)**, and seamless **API route integration**, **NextAdmin** ensures optimal performance. With the added benefits of **React 18 advancements** and **TypeScript** reliability, **NextAdmin** is the ultimate choice to kickstart your **Next.js** project efficiently.
+## 📋 Prerequisites
 
-## Installation
+- Node.js 18+
+- pnpm 10.18.1+
+- Docker (optional)
 
-1. Download/fork/clone the repo and Once you're in the correct directory, it's time to install all the necessary dependencies. You can do this by typing the following command:
+## 🚀 Getting Started
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/adrien-senecal/CollabTract-Front.git
+cd nextjs-admin-dashboard-main
+```
+
+2. Install dependencies:
+
+```bash
+pnpm install
+```
+
+3. Start the development server:
+
+```bash
+pnpm dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Docker Setup
+
+1. Build the Docker image:
+
+```bash
+docker build -t collabtract-frontend .
+```
+
+2. Run the container:
+
+```bash
+docker run -p 3000:3000 collabtract-frontend
+```
+
+## 📁 Project Structure
 
 ```
-npm install
-```
-If you're using **Yarn** as your package manager, the command will be:
-
-```
-yarn install
-```
-
-2. Okay, you're almost there. Now all you need to do is start the development server. If you're using **npm**, the command is:
-
-```
-npm run dev
-```
-And if you're using **Yarn**, it's:
-
-```
-yarn dev
+src/
+├── app/                 # Next.js app router pages
+├── components/          # Reusable UI components
+│   ├── Auth/           # Authentication components
+│   ├── Charts/         # Chart components
+│   ├── CitySearch/     # City search functionality
+│   ├── FormElements/   # Form components
+│   ├── Layouts/        # Layout components
+│   └── Tables/         # Table components
+├── config/             # Configuration files
+├── hooks/              # Custom React hooks
+├── lib/                # Utility libraries
+├── services/           # API services
+├── types/              # TypeScript type definitions
+└── utils/              # Utility functions
 ```
 
-And voila! You're now ready to start developing. **Happy coding**!
+## 🎯 Available Scripts
 
-## Highlighted Features
-**200+ Next.js Dashboard Ul Components and Templates** - includes a variety of prebuilt **Ul elements, components, pages, and examples** crafted with a high-quality design.
-Additionally, features seamless **essential integrations and extensive functionalities**.
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
 
-- A library of over **200** professional dashboard UI components and elements.
-- Five distinctive dashboard variations, catering to diverse use-cases.
-- A comprehensive set of essential dashboard and admin pages.
-- More than **45** **Next.js** files, ready for use.
-- Styling facilitated by **Tailwind CSS** files.
-- A design that resonates premium quality and high aesthetics.
-- A handy UI kit with assets.
-- Over ten web apps complete with examples.
-- Support for both **dark mode** and **light mode**.
-- Essential integrations including - Authentication (**NextAuth**), Database (**Postgres** with **Prisma**), and Search (**Algolia**).
-- Detailed and user-friendly documentation.
-- Customizable plugins and add-ons.
-- **TypeScript** compatibility.
-- Plus, much more!
+## 🌟 Key Components
 
-All these features and more make **NextAdmin** a robust, well-rounded solution for all your dashboard development needs.
+- **Route Planning**: Interactive route optimization
+- **City Search**: Advanced location search with autocomplete
+- **Analytics Dashboard**: Performance metrics and charts
+- **Campaign Management**: Plan and track flyering campaigns
 
-## Update Logs
+## 🔧 Configuration
 
-### Version 1.2.1 - [Mar 20, 2025]
-- Fix Peer dependency issues and NextConfig warning.
-- Updated apexcharts and react-apexhcarts to the latest version.
+The application supports various configuration options:
 
-### Version 1.2.0 - Major Upgrade and UI Improvements - [Jan 27, 2025]
+- **API Configuration**: Set in `src/config/api.ts`
+- **Theme Configuration**: Dark/light mode support
+- **Map Configuration**: Customizable map settings
 
-- Upgraded to Next.js v15 and updated dependencies
-- API integration with loading skeleton for tables and charts.
-- Improved code structure for better readability.
-- Rebuilt components like dropdown, sidebar, and all ui-elements using accessibility practices.
-- Using search-params to store dropdown selection and refetch data.
-- Semantic markups, better separation of concerns and more.
+## 📱 Responsive Design
 
-### Version 1.1.0
-- Updated Dependencies
-- Removed Unused Integrations
-- Optimized App
+The application is fully responsive and optimized for:
 
-### Version 1.0
-- Initial Release - [May 13, 2024]
+- Desktop computers
+- Tablets
+- Mobile devices
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions, please open an issue in the repository.
+
+---
+
+**CollabTract** - Optimizing distribution routes, one campaign at a time.

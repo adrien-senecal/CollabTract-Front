@@ -1,6 +1,23 @@
 import * as Icons from "../icons";
 
-export const NAV_DATA = [
+export interface NavSubItem {
+  title: string;
+  url: string;
+}
+
+export interface NavItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items?: NavSubItem[];
+}
+
+export interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+export const NAV_DATA: NavSection[] = [
   {
     label: "MAIN MENU",
     items: [
@@ -8,26 +25,17 @@ export const NAV_DATA = [
         title: "Home",
         url: "/",
         icon: Icons.HomeIcon,
-        items: [],
       },
       {
         title: "City Search",
         url: "/city-search",
         icon: Icons.User,
-        items: [],
-      },
-      {
-        title: "City Dashboard",
-        url: "/city-dashboard",
-        icon: Icons.PieChart,
-        items: [],
       },
       {
         title: "Route Planning",
         url: "/route-planning",
-        icon: Icons.Table,
-        items: [],
-      },
+        icon: Icons.FourCircle,
+      },      
     ],
   },
 ];
