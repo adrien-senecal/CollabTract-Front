@@ -72,14 +72,6 @@ function RoutePlanningContent() {
     setMapHtml(null);
     setStatsCluster(null);
     
-    // Log all parameters to console as requested
-    console.log("Route Planning Parameters:", {
-      city_name: formData.city_name,
-      dep_code: formData.dep_code,
-      cluster_nbr: formData.cluster_nbr,
-      clustering_methods: formData.clustering_methods
-    });
-    
     try {
       const response = await fetch('/api/collabtract/map', {
         method: 'POST',
