@@ -11,6 +11,22 @@ interface RoutePlanningFormData {
   clustering_methods: string;
 }
 
+interface StatsCluster {
+  count?: { [clusterId: string]: number };
+  length?: { [clusterId: string]: number };
+}
+
+interface TableRow {
+  cluster: string;
+  metric: string;
+  value: number;
+}
+
+interface MapApiResponse {
+  map_html: string;
+  stats_cluster: StatsCluster;
+}
+
 // Component that uses useSearchParams - needs to be wrapped in Suspense
 function RoutePlanningContent() {
   const router = useRouter();
@@ -25,6 +41,7 @@ function RoutePlanningContent() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [mapHtml, setMapHtml] = useState<string | null>(null);
+  const [statsCluster, setStatsCluster] = useState<StatsCluster | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Load city data from URL parameters on component mount
@@ -53,6 +70,7 @@ function RoutePlanningContent() {
     setIsLoading(true);
     setError(null);
     setMapHtml(null);
+    setStatsCluster(null);
     
     // Log all parameters to console as requested
     console.log("Route Planning Parameters:", {
@@ -75,16 +93,15 @@ function RoutePlanningContent() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Check if the response is HTML (for map)
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('text/html')) {
-        const htmlContent = await response.text();
-        setMapHtml(htmlContent);
+      // Parse JSON response
+      const data: MapApiResponse = await response.json();
+      
+      // Extract map_html and stats_cluster from the response
+      if (data.map_html && data.stats_cluster) {
+        setMapHtml(data.map_html);
+        setStatsCluster(data.stats_cluster);
       } else {
-        // Handle JSON response if needed
-        const data = await response.json();
-        console.log("API Response:", data);
-        setError("Unexpected response format. Expected HTML map content.");
+        setError("Invalid response format. Missing map_html or stats_cluster data.");
       }
     } catch (error) {
       console.error('Error fetching map:', error);
@@ -96,6 +113,89 @@ function RoutePlanningContent() {
 
   const handleBackToSearch = () => {
     router.push('/city-search');
+  };
+
+  // Component to render stats cluster table
+  const renderStatsTable = () => {
+    if (!statsCluster) {
+      return null;
+    }
+
+    // Handle nested structure: stats_cluster has count and length objects
+    const { count, length } = statsCluster;
+    
+    if (!count && !length) {
+      return null;
+    }
+
+    // Create rows for the table
+    const tableRows: TableRow[] = [];
+    
+    // Add count data rows
+    if (count) {
+      Object.entries(count).forEach(([clusterId, value]) => {
+        tableRows.push({
+          cluster: `Cluster ${clusterId}`,
+          metric: 'Count',
+          value: value
+        });
+      });
+    }
+    
+    // Add length data rows
+    if (length) {
+      Object.entries(length).forEach(([clusterId, value]) => {
+        tableRows.push({
+          cluster: `Cluster ${clusterId}`,
+          metric: 'Length',
+          value: value
+        });
+      });
+    }
+
+    if (tableRows.length === 0) {
+      return null;
+    }
+
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          Cluster Statistics
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Cluster
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Metric
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+              {tableRows.map((row, index) => (
+                <tr key={`${row.cluster}-${row.metric}`} className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    {row.cluster}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {row.metric}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {row.value}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -246,8 +346,9 @@ function RoutePlanningContent() {
             </div>
           </div>
 
-          {/* Right Column - Output/Map */}
+          {/* Right Column - Output/Map and Stats */}
           <div className="space-y-6">
+            {/* Map Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Map
@@ -310,6 +411,9 @@ function RoutePlanningContent() {
                 </div>
               )}
             </div>
+            
+            {/* Stats Table Section */}
+            {renderStatsTable()}
           </div>
         </div>
       </div>
