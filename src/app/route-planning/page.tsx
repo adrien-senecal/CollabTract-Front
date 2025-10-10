@@ -197,8 +197,8 @@ function RoutePlanningContent() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Route Planning</h1>
-              <p className="text-gray-600 dark:text-gray-300">Configure route planning parameters for your selected city</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{formData.city_name}</h1>
+              <p className="text-gray-600 dark:text-gray-300">Configure route planning parameters for {formData.city_name}</p>
             </div>
             <button
               onClick={handleBackToSearch}
@@ -216,25 +216,6 @@ function RoutePlanningContent() {
         <div className="grid grid-cols-1 lg:grid-cols-[30%_70%] gap-8">
           {/* Left Column - Configuration/Input */}
           <div className="space-y-6">
-            {/* Selected City Display */}
-            {formData.city_name && formData.dep_code && (
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-900 dark:text-blue-100">Selected City</h3>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                      {formData.city_name} (Department: {formData.dep_code})
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Route Planning Form */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
@@ -272,22 +253,29 @@ function RoutePlanningContent() {
                 {/* Cluster Number */}
                 <div>
                   <label htmlFor="cluster_nbr" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Cluster Number
+                    Cluster Number: {formData.cluster_nbr}
                   </label>
-                  <select
-                    id="cluster_nbr"
-                    value={formData.cluster_nbr}
-                    onChange={(e) => handleInputChange('cluster_nbr', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-                      <option key={num} value={num}>
-                        {num}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Select the number of clusters for route planning (1-20)
+                  <div className="relative">
+                    <input
+                      type="range"
+                      id="cluster_nbr"
+                      min="1"
+                      max="20"
+                      step="1"
+                      value={formData.cluster_nbr}
+                      onChange={(e) => handleInputChange('cluster_nbr', parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((formData.cluster_nbr - 1) / 19) * 100}%, #e5e7eb ${((formData.cluster_nbr - 1) / 19) * 100}%, #e5e7eb 100%)`
+                      }}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <span>1</span>
+                      <span>20</span>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Adjust the number of clusters for route planning (1-20)
                   </p>
                 </div>
 
