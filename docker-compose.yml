@@ -1,0 +1,18 @@
+name: collabtract
+
+services:
+  backend:
+    image: ghcr.io/adrien-senecal/collabtract-back:latest
+    container_name: collabtract-backend
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/adrien-senecal/collabtract-front:latest
+    container_name: collabtract-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - COLLAB_TRACT_API_URL=http://backend:8000
+    restart: unless-stopped
