@@ -213,7 +213,7 @@ function RoutePlanningContent() {
         </div>
 
         {/* Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[30%_70%] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[25%_70%] gap-8">
           {/* Left Column - Configuration/Input */}
           <div className="space-y-6">
 
@@ -290,7 +290,9 @@ function RoutePlanningContent() {
                     onChange={(e) => handleInputChange('clustering_methods', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="kmeans">K-Means</option>
+                    <option value="kmeans">Simple</option>
+                    <option value="balanced_length">Balanced Length (km)</option>
+                    <option value="balanced_count">Balanced Count (number of adresses)</option>
                   </select>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Select the clustering algorithm for route optimization
