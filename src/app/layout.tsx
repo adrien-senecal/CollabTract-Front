@@ -14,11 +14,11 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | City Explorer",
-    default: "City Explorer - Discover Cities & Plan Routes",
+    template: "%s | CollabTract",
+    default: "CollabTract - Smart Door-to-Door and Flyering Route Planner",
   },
   description:
-    "Explore cities around the world, view detailed analytics, and plan optimal routes with our comprehensive city management platform.",
+    "Plan faster. Deliver smarter. Measure what matters. CollabTract helps teams optimize door-to-door distribution routes and run high-impact flyering campaigns with data-driven insights.",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             <div className="w-full bg-gray-2 dark:bg-[#020d1a]">
               <Header />
 
-              <main className="isolate mx-auto w-full max-w-screen-2xl overflow-hidden p-4 md:p-6 2xl:p-10">
+              <main className="isolate mx-auto w-full max-w-screen-2xl 3xl:max-w-screen-3xl overflow-hidden p-4 md:p-6 2xl:p-10 3xl:p-12">
                 {children}
               </main>
             </div>
