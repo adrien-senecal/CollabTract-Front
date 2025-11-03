@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { NAV_DATA, type NavItem } from "./data";
-import { ArrowLeftIcon, ChevronUp } from "./icons";
+import { ArrowLeftIcon, ChevronUp, GitHubIcon } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
 
@@ -169,6 +169,20 @@ export function Sidebar() {
                 </nav>
               </div>
             ))}
+          </div>
+
+          {/* GitHub Link */}
+          <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
+            <a
+              href="https://github.com/adrien-senecal"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => isMobile && toggleSidebar()}
+              className="flex items-center gap-3 rounded-lg px-3.5 py-3 font-medium text-dark-4 transition-all duration-200 hover:bg-gray-100 hover:text-dark dark:text-dark-6 dark:hover:bg-[#FFFFFF1A] dark:hover:text-white"
+            >
+              <GitHubIcon className="size-6 shrink-0" aria-hidden="true" />
+              <span>GitHub</span>
+            </a>
           </div>
         </div>
       </aside>
