@@ -8,7 +8,7 @@ interface RoutePlanningFormData {
   city_name: string;
   dep_code: string;
   cluster_nbr: number;
-  clustering_methods: string;
+  clustering_method: string;
 }
 
 interface StatsCluster {
@@ -36,7 +36,7 @@ function RoutePlanningContent() {
     city_name: "",
     dep_code: "",
     cluster_nbr: 1,
-    clustering_methods: "kmeans"
+    clustering_method: "kmeans"
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -281,13 +281,13 @@ function RoutePlanningContent() {
 
                 {/* Clustering Methods */}
                 <div>
-                  <label htmlFor="clustering_methods" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label htmlFor="clustering_method" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Méthode de clustering
                   </label>
                   <select
-                    id="clustering_methods"
-                    value={formData.clustering_methods}
-                    onChange={(e) => handleInputChange('clustering_methods', e.target.value)}
+                    id="clustering_method"
+                    value={formData.clustering_method}
+                    onChange={(e) => handleInputChange('clustering_method', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="kmeans">Simple</option>
