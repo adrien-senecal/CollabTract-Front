@@ -19,7 +19,7 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span className="text-gray-600 dark:text-gray-300">Searching for cities...</span>
+            <span className="text-gray-600 dark:text-gray-300">Recherche de villes...</span>
           </div>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Error</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Erreur</h3>
           <p className="text-gray-600 dark:text-gray-300">{error}</p>
         </div>
       </div>
@@ -51,9 +51,9 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No cities found</h3>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune ville trouvée</h3>
           <p className="text-gray-600 dark:text-gray-300">
-            Try adjusting your search terms or department code.
+            Essayez de modifier vos termes de recherche ou le code postal.
           </p>
         </div>
       </div>
@@ -64,10 +64,10 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Search Results
+          Résultats de la recherche de villes
         </h2>
         <span className="text-sm text-gray-500 dark:text-gray-400">
-          {results.length} {results.length === 1 ? 'city' : 'cities'} found
+          {results.length} {results.length === 1 ? 'ville' : 'villes'} trouvées
         </span>
       </div>
 
@@ -91,7 +91,7 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
                     {city.nom_standard}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Department: {city.dep_code}
+                    Code postal: {city.dep_code}
                   </p>
                 </div>
               </div>

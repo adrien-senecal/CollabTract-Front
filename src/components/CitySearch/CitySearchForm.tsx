@@ -20,7 +20,7 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
     
     // Validate that at least one field is provided
     if (!city.trim() && !depCode.trim()) {
-      onError('Please provide either a city name or department code');
+      onError('Veuillez indiquer le nom de la ville ou le code du département.');
       return;
     }
 
@@ -54,7 +54,7 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-        Search Cities
+      Recherche de ville
       </h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -62,14 +62,14 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
           {/* City Input */}
           <div>
             <label htmlFor="city" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              City Name
+              Ville
             </label>
             <input
               type="text"
               id="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="Enter city name..."
+              placeholder="Entrez le nom de la ville..."
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             />
@@ -78,14 +78,14 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
           {/* Department Code Input */}
           <div>
             <label htmlFor="depCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Department Code
+              Code postal
             </label>
             <input
               type="text"
               id="depCode"
               value={depCode}
               onChange={(e) => setDepCode(e.target.value)}
-              placeholder="Enter department code..."
+              placeholder="Entrez le code postal..."
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               disabled={isLoading}
             />
@@ -105,14 +105,14 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Searching...
+                Recherche...
               </>
             ) : (
               <>
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                Search
+                Rechercher
               </>
             )}
           </button>
@@ -123,13 +123,13 @@ export default function CitySearchForm({ onResults, onLoading, onError }: CitySe
             disabled={isLoading}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Clear
+            Effacer
           </button>
         </div>
       </form>
 
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-        Provide either a city name or department code to search for cities.
+        Indiquez le nom de la ville ou le code postal pour rechercher les villes.
       </p>
     </div>
   );

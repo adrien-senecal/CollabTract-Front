@@ -9,24 +9,24 @@ export default function LandingPage() {
         <div className="relative container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              CollabTract FrontEnd
+              CollabTract
             </h1>
             <div className="w-16 h-0.5 bg-primary mx-auto mb-8" />
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-gray-300 mb-8">
-              Smart Door-to-Door and Flyering Route Planner
+            Planificateur intelligent de tournées de porte-à-porte et de distribution de prospectus
             </h2>
             <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 font-medium">
-              Plan faster. Deliver smarter. Measure what matters.
+            Planifiez plus vite. Agissez plus intelligemment. Mesurez ce qui compte.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-3xl mx-auto">
-              CollabTract is a modern web application that helps teams optimize door‑to‑door distribution routes and run high‑impact flyering campaigns. Designed as a polished portfolio project by a Data Scientist / Data Engineer, it showcases end‑to‑end product thinking—from clean UX to data‑driven decision making.
+            CollabTract est une application web moderne qui aide les équipes à optimiser leurs tournées de distribution porte-à-porte et à mener des campagnes de distribution de flyers à fort impact. Elle illustre une approche produit globale, de l&apos;expérience utilisateur épurée à la prise de décision basée sur les données.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
               <Link
                 href="/city-search"
                 className="bg-primary hover:bg-primary-dark text-white px-8 py-4 rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl"
               >
-                Start Planning Routes
+                Commencez à planifier vos itinéraires
               </Link>
             </div>
           </div>
@@ -38,30 +38,30 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why CollabTract?
+            Pourquoi CollabTract ?
             </h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               {
                 icon: "⚡",
-                title: "Optimized Routes",
-                description: "Reduce hours of manual planning to minutes with optimized routes",
+                title: "Itinéraires optimisés",
+                description: "Réduisez des heures de planification manuelle à quelques minutes grâce à des itinéraires optimisés.",
               },
               {
                 icon: "📱",
-                title: "Mobile-First",
-                description: "Keep field teams aligned with a mobile‑first interface",
+                title: "Priorité au mobile",
+                description: "Maintenez les équipes sur le terrain alignées sur une interface mobile prioritaire.",
               },
               {
                 icon: "📊",
-                title: "Real-Time Analytics",
-                description: "See performance clearly with real‑time charts and metrics (coming soon)",
+                title: "Analyses en temps réel",
+                description: "Visualisez clairement les performances grâce à des graphiques et des indicateurs en temps réel (bientôt disponibles).",
               },
               {
                 icon: "🌓",
-                title: "Dark/Light Mode",
-                description: "Switch seamlessly between dark and light modes in any environment",
+                title: "Mode sombre/clair",
+                description: "Passez facilement du mode sombre au mode clair dans n&apos;importe quel environnement.",
               },
             ].map((feature, index) => (
               <div
@@ -87,18 +87,18 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Built for data‑driven operations
+                Conçu pour les opérations basées sur les données
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-                CollabTract blends geospatial UX with analytics, making it easy to:
+                CollabTract combine l&apos;expérience utilisateur géospatiale et l&apos;analyse de données, facilitant ainsi :
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                "Identify the best neighborhoods to prioritize",
-                "Balance workloads across teams",
-                "Monitor campaign effectiveness in real time",
-                "Iterate quickly based on measurable outcomes",
+                "Identifier les meilleurs quartiers à prioriser",
+                "Répartir la charge de travail entre les équipes",
+                "Suivez l&apos;efficacité de la campagne en temps réel",
+                "Itérer rapidement en fonction de résultats mesurables",
               ].map((item, index) => (
                 <div
                   key={index}
@@ -122,14 +122,14 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Tech that scales
+            Une technologie évolutive et scalable
             </h2>
           </div>
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 { label: "Framework", value: "Next.js 15.5.4" },
-                { label: "Language", value: "TypeScript" },
+                { label: "Langue", value: "TypeScript" },
                 { label: "Styling", value: "Tailwind CSS" },
                 { label: "Charts", value: "ApexCharts" },
                 { label: "Maps", value: "JSVectorMap" },
@@ -161,7 +161,7 @@ export default function LandingPage() {
               Open Source
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Explore the codebase and contribute to the project
+              Explorez le code source et contribuez au projet.
             </p>
           </div>
           <div className="max-w-3xl mx-auto">
