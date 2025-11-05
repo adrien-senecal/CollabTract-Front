@@ -19,20 +19,20 @@ export interface NavSection {
 
 export const NAV_DATA: NavSection[] = [
   {
-    label: "MAIN MENU",
+    label: "MENU PRINCIPAL",
     items: [
       {
-        title: "Home",
+        title: "Accueil",
         url: "/",
         icon: Icons.HomeIcon,
       },
       {
-        title: "City Search",
+        title: "Recherche de ville",
         url: "/city-search",
         icon: Icons.User,
       },
       {
-        title: "Route Planning",
+        title: "Itinéraires optimisés",
         url: "/route-planning",
         icon: Icons.FourCircle,
       },      
