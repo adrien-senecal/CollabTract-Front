@@ -15,7 +15,7 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: {
     template: "%s | CollabTract",
-    default: "CollabTract - Smart Door-to-Door and Flyering Route Planner",
+    default: "CollabTract - Planificateur intelligent de tournées de porte-à-porte et de distribution de prospectus",
   },
   description:
     "Plan faster. Deliver smarter. Measure what matters. CollabTract helps teams optimize door-to-door distribution routes and run high-impact flyering campaigns with data-driven insights.",

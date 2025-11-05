@@ -152,7 +152,7 @@ function RoutePlanningContent() {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Cluster Statistics
+          Statistiques des clusters
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
@@ -162,10 +162,10 @@ function RoutePlanningContent() {
                   Cluster
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Metric
+                  Mesure
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Value
+                  Valeur
                 </th>
               </tr>
             </thead>
@@ -198,7 +198,7 @@ function RoutePlanningContent() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{formData.city_name}</h1>
-              <p className="text-gray-600 dark:text-gray-300">Configure route planning parameters for {formData.city_name}</p>
+              <p className="text-gray-600 dark:text-gray-300">Configurer les paramètres de planification d&apos;itinéraire pour {formData.city_name}</p>
             </div>
             <button
               onClick={handleBackToSearch}
@@ -207,7 +207,7 @@ function RoutePlanningContent() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              <span>Back to Search</span>
+              <span>Retour à la recherche</span>
             </button>
           </div>
         </div>
@@ -225,7 +225,7 @@ function RoutePlanningContent() {
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      City Name
+                      Nom de la ville
                     </label>
                     <input
                       type="text"
@@ -238,7 +238,7 @@ function RoutePlanningContent() {
                   
                   <div>
                     <label htmlFor="dep_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Department Code
+                      Code postal
                     </label>
                     <input
                       type="text"
@@ -275,14 +275,14 @@ function RoutePlanningContent() {
                     </div>
                   </div>
                   <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Adjust the number of clusters for route planning (1-20)
+                    Ajustez le nombre de clusters pour la planification d&apos;itinéraire (1-20)
                   </p>
                 </div>
 
                 {/* Clustering Methods */}
                 <div>
                   <label htmlFor="clustering_methods" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Clustering Method
+                    Méthode de clustering
                   </label>
                   <select
                     id="clustering_methods"
@@ -295,7 +295,7 @@ function RoutePlanningContent() {
                     <option value="balanced_count">Balanced Count (number of adresses)</option>
                   </select>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Select the clustering algorithm for route optimization
+                    Sélectionnez l&apos;algorithme de clustering pour l&apos;optimisation des itinéraires
                   </p>
                 </div>
 
@@ -319,7 +319,7 @@ function RoutePlanningContent() {
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                         </svg>
-                        Route Planning
+                        Planification d&apos;itinéraire
                       </>
                     )}
                   </button>
@@ -347,7 +347,7 @@ function RoutePlanningContent() {
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Map Generated</h3>
                     <p className="text-gray-500 dark:text-gray-400">
-                      Configure your parameters and click &quot;Route Planning&quot; to generate the map
+                      Configurez vos paramètres et cliquez sur &quot;Planification d&apos;itinéraire&quot; pour générer la carte
                     </p>
                   </div>
                 </div>
@@ -361,7 +361,7 @@ function RoutePlanningContent() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span className="text-gray-600 dark:text-gray-300">Generating route planning map...</span>
+                    <span className="text-gray-600 dark:text-gray-300">Génération de la carte de planification d&apos;itinéraire...</span>
                   </div>
                 </div>
               )}
@@ -411,8 +411,8 @@ function RoutePlanningLoading() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Route Planning</h1>
-              <p className="text-gray-600 dark:text-gray-300">Loading route planning configuration...</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Planification d&apos;itinéraire</h1>
+              <p className="text-gray-600 dark:text-gray-300">Chargement de la configuration de planification d&apos;itinéraire...</p>
             </div>
           </div>
         </div>
@@ -422,7 +422,7 @@ function RoutePlanningLoading() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span className="text-gray-600 dark:text-gray-300">Loading...</span>
+            <span className="text-gray-600 dark:text-gray-300">Chargement...</span>
           </div>
         </div>
       </div>

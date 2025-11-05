@@ -43,8 +43,8 @@ export default function CitySearchPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">City Search</h1>
-          <p className="text-gray-600 dark:text-gray-300">Search for French cities by name or department code</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Recherche de ville</h1>
+          <p className="text-gray-600 dark:text-gray-300">Recherchez les villes françaises par nom ou code postal</p>
         </div>
 
         {/* Search Form */}

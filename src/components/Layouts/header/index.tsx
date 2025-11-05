@@ -38,14 +38,14 @@ export function Header() {
         <h1 className="mb-0.5 text-heading-5 font-bold text-dark dark:text-white">
           CollabTract
         </h1>
-        <p className="font-medium">Smart Door-to-Door and Flyering Route Planner</p>
+        <p className="font-medium">Planificateur intelligent de tournées de porte-à-porte et de distribution de prospectus</p>
       </div>
 
       <div className="flex flex-1 items-center justify-end gap-2 min-[375px]:gap-4">
         <div className="relative w-full max-w-[300px]">
           <input
             type="search"
-            placeholder="Search"
+            placeholder="Recherche"
             className="flex w-full items-center gap-3.5 rounded-full border bg-gray-2 py-3 pl-[53px] pr-5 outline-none transition-colors focus-visible:border-primary dark:border-dark-3 dark:bg-dark-2 dark:hover:border-dark-4 dark:hover:bg-dark-3 dark:hover:text-dark-6 dark:focus-visible:border-primary"
           />
 
