@@ -14,12 +14,8 @@ interface RoutePlanningFormData {
 interface StatsCluster {
   count?: { [clusterId: string]: number };
   length?: { [clusterId: string]: number };
-}
-
-interface TableRow {
-  cluster: string;
-  metric: string;
-  value: number;
+  color?: { [clusterId: string]: string };
+  name?: { [clusterId: string]: string };
 }
 
 interface MapApiResponse {
@@ -43,6 +39,7 @@ function RoutePlanningContent() {
   const [mapHtml, setMapHtml] = useState<string | null>(null);
   const [statsCluster, setStatsCluster] = useState<StatsCluster | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [clusterNames, setClusterNames] = useState<{ [clusterId: string]: string }>({});
 
   // Load city data from URL parameters on component mount
   useEffect(() => {
@@ -92,6 +89,11 @@ function RoutePlanningContent() {
       if (data.map_html && data.stats_cluster) {
         setMapHtml(data.map_html);
         setStatsCluster(data.stats_cluster);
+        
+        // Initialize cluster names from the response
+        if (data.stats_cluster.name) {
+          setClusterNames(data.stats_cluster.name);
+        }
       } else {
         setError("Invalid response format. Missing map_html or stats_cluster data.");
       }
@@ -107,45 +109,31 @@ function RoutePlanningContent() {
     router.push('/city-search');
   };
 
+  // Handle cluster name change
+  const handleClusterNameChange = (clusterId: string, newName: string) => {
+    setClusterNames(prev => ({
+      ...prev,
+      [clusterId]: newName
+    }));
+  };
+
   // Component to render stats cluster table
   const renderStatsTable = () => {
     if (!statsCluster) {
       return null;
     }
 
-    // Handle nested structure: stats_cluster has count and length objects
-    const { count, length } = statsCluster;
+    // Handle nested structure: stats_cluster has count, length, color, and name objects
+    const { count, length, color, name } = statsCluster;
     
-    if (!count && !length) {
+    if (!count || !length) {
       return null;
     }
 
-    // Create rows for the table
-    const tableRows: TableRow[] = [];
-    
-    // Add count data rows
-    if (count) {
-      Object.entries(count).forEach(([clusterId, value]) => {
-        tableRows.push({
-          cluster: `Cluster ${clusterId}`,
-          metric: 'Count',
-          value: value
-        });
-      });
-    }
-    
-    // Add length data rows
-    if (length) {
-      Object.entries(length).forEach(([clusterId, value]) => {
-        tableRows.push({
-          cluster: `Cluster ${clusterId}`,
-          metric: 'Length',
-          value: value
-        });
-      });
-    }
+    // Get all cluster IDs from count (assuming all objects have the same keys)
+    const clusterIds = Object.keys(count).sort((a, b) => parseInt(a) - parseInt(b));
 
-    if (tableRows.length === 0) {
+    if (clusterIds.length === 0) {
       return null;
     }
 
@@ -162,27 +150,53 @@ function RoutePlanningContent() {
                   Cluster
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Mesure
+                  Adresses
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Valeur
+                  Distance (km)
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-              {tableRows.map((row, index) => (
-                <tr key={`${row.cluster}-${row.metric}`} className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    {row.cluster}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {row.metric}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {row.value}
-                  </td>
-                </tr>
-              ))}
+              {clusterIds.map((clusterId, index) => {
+                const clusterColor = color?.[clusterId] || '#808080';
+                const defaultName = name?.[clusterId] || `Cluster ${parseInt(clusterId) + 1}`;
+                const displayName = clusterNames[clusterId] || defaultName;
+                const addressCount = count[clusterId] || 0;
+                const distanceMeters = length[clusterId] || 0;
+                const distanceKm = (distanceMeters / 1000).toFixed(2);
+
+                return (
+                  <tr 
+                    key={clusterId} 
+                    className={index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-700'}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        {/* Color chip */}
+                        <div
+                          className="w-4 h-4 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
+                          style={{ backgroundColor: clusterColor }}
+                          title={`Couleur du cluster: ${clusterColor}`}
+                        />
+                        {/* Editable name */}
+                        <input
+                          type="text"
+                          value={displayName}
+                          onChange={(e) => handleClusterNameChange(clusterId, e.target.value)}
+                          className="text-sm font-medium text-gray-900 dark:text-white bg-transparent border border-transparent rounded px-2 py-1 hover:border-gray-300 dark:hover:border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors min-w-[120px] max-w-[200px]"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                      {addressCount}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                      {distanceKm}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -253,7 +267,7 @@ function RoutePlanningContent() {
                 {/* Cluster Number */}
                 <div>
                   <label htmlFor="cluster_nbr" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Cluster Number: {formData.cluster_nbr}
+                    Nombre de clusters: {formData.cluster_nbr}
                   </label>
                   <div className="relative">
                     <input
@@ -290,9 +304,9 @@ function RoutePlanningContent() {
                     onChange={(e) => handleInputChange('clustering_method', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="kmeans">Simple</option>
-                    <option value="balanced_length">Balanced Length (km)</option>
-                    <option value="balanced_count">Balanced Count (number of adresses)</option>
+                    <option value="balanced_count">Nombre d'adresses équilibré</option>
+                    <option value="balanced_length">Distance équilibrée (km)</option>
+                    <option value="kmeans">Non équilibré</option>
                   </select>
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Sélectionnez l&apos;algorithme de clustering pour l&apos;optimisation des itinéraires
@@ -312,7 +326,7 @@ function RoutePlanningContent() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Processing...
+                        Traitement en cours...
                       </>
                     ) : (
                       <>
