@@ -1,5 +1,6 @@
 "use client";
 
+import { getCityName, getCityPostalCode } from '@/lib/city-search';
 import { CityResult } from '@/types/city-search';
 
 interface CitySearchResultsProps {
@@ -72,37 +73,43 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
       </div>
 
       <div className="grid gap-3">
-        {results.map((city, index) => (
-          <button
-            key={`${city.nom_standard}-${city.dep_code}-${index}`}
-            onClick={() => onCitySelect(city)}
-            className="w-full p-4 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        {results.map((city, index) => {
+          const cityName = getCityName(city);
+          const postalCode = getCityPostalCode(city);
+          const key = `${cityName || 'city'}-${postalCode || index}-${index}`;
+
+          return (
+            <button
+              key={key}
+              onClick={() => onCitySelect(city)}
+              className="w-full p-4 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">
+                      {cityName || 'Nom de ville indisponible'}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {postalCode ? `Code postal : ${postalCode}` : 'Code postal indisponible'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center text-gray-400 dark:text-gray-500">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
-                <div>
-                  <h3 className="font-medium text-gray-900 dark:text-white">
-                    {city.nom_standard}
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Code postal: {city.dep_code}
-                  </p>
-                </div>
               </div>
-              <div className="flex items-center text-gray-400 dark:text-gray-500">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

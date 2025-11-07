@@ -6,9 +6,11 @@ import { CityResult } from "@/types/city-search";
 
 interface RoutePlanningFormData {
   city_name: string;
-  dep_code: string;
-  cluster_nbr: number;
+  department_code: string;
+  cluster_count: number;
   clustering_method: string;
+  cluster_colors: Record<string, string> | null;
+  seed: number;
 }
 
 interface StatsCluster {
@@ -20,7 +22,7 @@ interface StatsCluster {
 
 interface MapApiResponse {
   map_html: string;
-  stats_cluster: StatsCluster;
+  cluster_stats: StatsCluster;
 }
 
 // Component that uses useSearchParams - needs to be wrapped in Suspense
@@ -30,9 +32,11 @@ function RoutePlanningContent() {
   
   const [formData, setFormData] = useState<RoutePlanningFormData>({
     city_name: "",
-    dep_code: "",
-    cluster_nbr: 1,
-    clustering_method: "kmeans"
+    department_code: "",
+    cluster_count: 1,
+    clustering_method: "balanced_count",
+    cluster_colors: null,
+    seed: 42
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -40,22 +44,25 @@ function RoutePlanningContent() {
   const [statsCluster, setStatsCluster] = useState<StatsCluster | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [clusterNames, setClusterNames] = useState<{ [clusterId: string]: string }>({});
+  const [clusterColors, setClusterColors] = useState<{ [clusterId: string]: string }>({});
+  const [editingColorClusterId, setEditingColorClusterId] = useState<string | null>(null);
+  const [colorInputValue, setColorInputValue] = useState<string>('');
 
   // Load city data from URL parameters on component mount
   useEffect(() => {
     const cityName = searchParams.get('city_name');
-    const depCode = searchParams.get('dep_code');
+    const departmentCode = searchParams.get('department_code');
     
-    if (cityName && depCode) {
+    if (cityName && departmentCode) {
       setFormData(prev => ({
         ...prev,
         city_name: cityName,
-        dep_code: depCode
+        department_code: departmentCode
       }));
     }
   }, [searchParams]);
 
-  const handleInputChange = (field: keyof RoutePlanningFormData, value: string | number) => {
+  const handleInputChange = <K extends keyof RoutePlanningFormData>(field: K, value: RoutePlanningFormData[K]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -85,17 +92,22 @@ function RoutePlanningContent() {
       // Parse JSON response
       const data: MapApiResponse = await response.json();
       
-      // Extract map_html and stats_cluster from the response
-      if (data.map_html && data.stats_cluster) {
+      // Extract map_html and cluster_stats from the response
+      if (data.map_html && data.cluster_stats) {
         setMapHtml(data.map_html);
-        setStatsCluster(data.stats_cluster);
+        setStatsCluster(data.cluster_stats);
         
         // Initialize cluster names from the response
-        if (data.stats_cluster.name) {
-          setClusterNames(data.stats_cluster.name);
+        if (data.cluster_stats.name) {
+          setClusterNames(data.cluster_stats.name);
+        }
+        
+        // Initialize cluster colors from the response
+        if (data.cluster_stats.color) {
+          setClusterColors(data.cluster_stats.color);
         }
       } else {
-        setError("Invalid response format. Missing map_html or stats_cluster data.");
+        setError("Invalid response format. Missing map_html or cluster_stats data.");
       }
     } catch (error) {
       console.error('Error fetching map:', error);
@@ -117,13 +129,40 @@ function RoutePlanningContent() {
     }));
   };
 
+  // Handle color chip click - open color editor
+  const handleColorChipClick = (clusterId: string, currentColor: string) => {
+    setEditingColorClusterId(clusterId);
+    setColorInputValue(currentColor);
+  };
+
+  // Handle color change
+  const handleColorChange = (clusterId: string, newColor: string) => {
+    setClusterColors(prev => ({
+      ...prev,
+      [clusterId]: newColor
+    }));
+    setEditingColorClusterId(null);
+    setColorInputValue('');
+  };
+
+  // Handle color editor close
+  const handleColorEditorClose = () => {
+    setEditingColorClusterId(null);
+    setColorInputValue('');
+  };
+
+  // Validate hex color
+  const isValidHexColor = (color: string): boolean => {
+    return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+  };
+
   // Component to render stats cluster table
   const renderStatsTable = () => {
     if (!statsCluster) {
       return null;
     }
 
-    // Handle nested structure: stats_cluster has count, length, color, and name objects
+    // Handle nested structure: cluster_stats has count, length, color, and name objects
     const { count, length, color, name } = statsCluster;
     
     if (!count || !length) {
@@ -159,7 +198,8 @@ function RoutePlanningContent() {
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
               {clusterIds.map((clusterId, index) => {
-                const clusterColor = color?.[clusterId] || '#808080';
+                const defaultColor = color?.[clusterId] || '#808080';
+                const clusterColor = clusterColors[clusterId] || defaultColor;
                 const defaultName = name?.[clusterId] || `Cluster ${parseInt(clusterId) + 1}`;
                 const displayName = clusterNames[clusterId] || defaultName;
                 const addressCount = count[clusterId] || 0;
@@ -173,11 +213,13 @@ function RoutePlanningContent() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        {/* Color chip */}
-                        <div
-                          className="w-4 h-4 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600"
+                        {/* Color chip - clickable */}
+                        <button
+                          type="button"
+                          onClick={() => handleColorChipClick(clusterId, clusterColor)}
+                          className="w-4 h-4 rounded-full flex-shrink-0 border border-gray-300 dark:border-gray-600 cursor-pointer hover:ring-2 hover:ring-blue-500 hover:ring-offset-1 transition-all"
                           style={{ backgroundColor: clusterColor }}
-                          title={`Couleur du cluster: ${clusterColor}`}
+                          title={`Cliquez pour éditer la couleur: ${clusterColor}`}
                         />
                         {/* Editable name */}
                         <input
@@ -204,8 +246,97 @@ function RoutePlanningContent() {
     );
   };
 
+  // Color editor modal component
+  const renderColorEditor = () => {
+    if (!editingColorClusterId) return null;
+
+    const isValid = isValidHexColor(colorInputValue);
+    const defaultName = statsCluster?.name?.[editingColorClusterId] || `Cluster ${parseInt(editingColorClusterId) + 1}`;
+    const displayName = clusterNames[editingColorClusterId] || defaultName;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleColorEditorClose}>
+        <div 
+          className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Éditer la couleur - {displayName}
+            </h3>
+            <button
+              onClick={handleColorEditorClose}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="color-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Code hexadécimal de la couleur
+              </label>
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-12 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex-shrink-0"
+                  style={{ backgroundColor: isValid ? colorInputValue : '#808080' }}
+                />
+                <input
+                  type="text"
+                  id="color-input"
+                  value={colorInputValue}
+                  onChange={(e) => setColorInputValue(e.target.value)}
+                  placeholder="#000000"
+                  className={`flex-1 px-3 py-2 border rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 ${
+                    isValid 
+                      ? 'border-gray-300 dark:border-gray-600 focus:ring-blue-500' 
+                      : 'border-red-500 focus:ring-red-500'
+                  }`}
+                />
+              </div>
+              {!isValid && colorInputValue && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  Format invalide. Utilisez un code hexadécimal (ex: #FF5733 ou #F73)
+                </p>
+              )}
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                Format: #RRGGBB ou #RGB (ex: #FF5733, #F73)
+              </p>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+              <button
+                type="button"
+                onClick={handleColorEditorClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (isValid && editingColorClusterId) {
+                    handleColorChange(editingColorClusterId, colorInputValue);
+                  }
+                }}
+                disabled={!isValid}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {renderColorEditor()}
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -251,13 +382,13 @@ function RoutePlanningContent() {
                   </div>
                   
                   <div>
-                    <label htmlFor="dep_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label htmlFor="department_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Code postal
                     </label>
                     <input
                       type="text"
-                      id="dep_code"
-                      value={formData.dep_code}
+                      id="department_code"
+                      value={formData.department_code}
                       readOnly
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                     />
@@ -266,21 +397,21 @@ function RoutePlanningContent() {
 
                 {/* Cluster Number */}
                 <div>
-                  <label htmlFor="cluster_nbr" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre de clusters: {formData.cluster_nbr}
+                  <label htmlFor="cluster_count" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Nombre de clusters: {formData.cluster_count}
                   </label>
                   <div className="relative">
                     <input
                       type="range"
-                      id="cluster_nbr"
+                      id="cluster_count"
                       min="1"
                       max="20"
                       step="1"
-                      value={formData.cluster_nbr}
-                      onChange={(e) => handleInputChange('cluster_nbr', parseInt(e.target.value))}
+                      value={formData.cluster_count}
+                      onChange={(e) => handleInputChange('cluster_count', parseInt(e.target.value))}
                       className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                       style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((formData.cluster_nbr - 1) / 19) * 100}%, #e5e7eb ${((formData.cluster_nbr - 1) / 19) * 100}%, #e5e7eb 100%)`
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb 100%)`
                       }}
                     />
                     <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -304,7 +435,7 @@ function RoutePlanningContent() {
                     onChange={(e) => handleInputChange('clustering_method', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="balanced_count">Nombre d'adresses équilibré</option>
+                    <option value="balanced_count">Nombre d&apos;adresses équilibré</option>
                     <option value="balanced_length">Distance équilibrée (km)</option>
                     <option value="kmeans">Non équilibré</option>
                   </select>
@@ -317,7 +448,7 @@ function RoutePlanningContent() {
                 <div className="pt-6 border-t border-gray-200 dark:border-gray-600">
                   <button
                     type="submit"
-                    disabled={isLoading || !formData.city_name || !formData.dep_code}
+                    disabled={isLoading || !formData.city_name || !formData.department_code}
                     className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {isLoading ? (
