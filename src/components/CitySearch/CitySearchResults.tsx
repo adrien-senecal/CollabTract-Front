@@ -1,6 +1,6 @@
 "use client";
 
-import { getCityName, getCityPostalCode } from '@/lib/city-search';
+import { getCityName, getCityDepartmentCode } from '@/lib/city-search';
 import { CityResult } from '@/types/city-search';
 
 interface CitySearchResultsProps {
@@ -75,8 +75,8 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
       <div className="grid gap-3">
         {results.map((city, index) => {
           const cityName = getCityName(city);
-          const postalCode = getCityPostalCode(city);
-          const key = `${cityName || 'city'}-${postalCode || index}-${index}`;
+          const departmentCode = getCityDepartmentCode(city);
+          const key = `${cityName || 'city'}-${departmentCode || index}-${index}`;
 
           return (
             <button
@@ -97,7 +97,7 @@ export default function CitySearchResults({ results, isLoading, error, onCitySel
                       {cityName || 'Nom de ville indisponible'}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {postalCode ? `Code postal : ${postalCode}` : 'Code postal indisponible'}
+                      {departmentCode ? `Département : ${departmentCode}` : 'Département indisponible'}
                     </p>
                   </div>
                 </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CitySearchForm, CitySearchResults } from "@/components/CitySearch";
-import { getCityDepartmentCode, getCityName, getCityPostalCode } from "@/lib/city-search";
+import { getCityDepartmentCode, getCityName } from "@/lib/city-search";
 import { CityResult } from "@/types/city-search";
 
 export default function CitySearchPage() {
@@ -33,7 +33,6 @@ export default function CitySearchPage() {
     const params = new URLSearchParams();
     const cityName = getCityName(city);
     const departmentCode = getCityDepartmentCode(city);
-    const postalCode = getCityPostalCode(city);
 
     if (cityName) {
       params.set("city_name", cityName);
@@ -41,10 +40,6 @@ export default function CitySearchPage() {
 
     if (departmentCode) {
       params.set("department_code", departmentCode);
-    }
-
-    if (postalCode) {
-      params.set("postal_code", postalCode);
     }
 
     router.push(`/route-planning?${params.toString()}`);
@@ -83,9 +78,9 @@ export default function CitySearchPage() {
                   {getCityName(selectedCity) || "Nom indisponible"}
                 </p>
                 <p className="text-xs text-green-600 dark:text-green-400">
-                  {getCityPostalCode(selectedCity)
-                    ? `Code postal : ${getCityPostalCode(selectedCity)}`
-                    : "Code postal indisponible"}
+                  {getCityDepartmentCode(selectedCity)
+                    ? `Département : ${getCityDepartmentCode(selectedCity)}`
+                    : "Département indisponible"}
                 </p>
               </div>
             </div>
