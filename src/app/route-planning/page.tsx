@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CityResult } from "@/types/city-search";
 
@@ -47,6 +47,20 @@ function RoutePlanningContent() {
   const [clusterColors, setClusterColors] = useState<{ [clusterId: string]: string }>({});
   const [editingColorClusterId, setEditingColorClusterId] = useState<string | null>(null);
   const [colorInputValue, setColorInputValue] = useState<string>('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+    try {
+      const storedValue = window.localStorage.getItem("sidebarOpen");
+      return storedValue === null ? true : storedValue === "true";
+    } catch {
+      return true;
+    }
+  });
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
+  const sidebarId = "route-planning-configuration-panel";
 
   // Load city data from URL parameters on component mount
   useEffect(() => {
@@ -61,6 +75,26 @@ function RoutePlanningContent() {
       }));
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("sidebarOpen", String(isSidebarOpen));
+    } catch {
+      // Ignore persistence errors (e.g., storage disabled)
+    }
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    const currentSidebar = sidebarRef.current;
+    if (!currentSidebar) {
+      return;
+    }
+    if (isSidebarOpen) {
+      currentSidebar.removeAttribute("inert");
+    } else {
+      currentSidebar.setAttribute("inert", "");
+    }
+  }, [isSidebarOpen]);
 
   const handleInputChange = <K extends keyof RoutePlanningFormData>(field: K, value: RoutePlanningFormData[K]) => {
     setFormData(prev => ({
@@ -155,6 +189,28 @@ function RoutePlanningContent() {
   const isValidHexColor = (color: string): boolean => {
     return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
   };
+
+  const assignToggleButtonRef = (node: HTMLButtonElement | null) => {
+    toggleButtonRef.current = node;
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prevOpen) => {
+      const nextOpen = !prevOpen;
+
+      if (prevOpen && sidebarRef.current?.contains(document.activeElement)) {
+        window.setTimeout(() => {
+          toggleButtonRef.current?.focus();
+        }, 0);
+      }
+
+      return nextOpen;
+    });
+  };
+
+  const toggleButtonAriaLabel = isSidebarOpen
+    ? "Réduire le panneau de configuration"
+    : "Afficher le panneau de configuration";
 
   // Component to render stats cluster table
   const renderStatsTable = () => {
@@ -357,124 +413,162 @@ function RoutePlanningContent() {
           </div>
         </div>
 
+        {/* Floating toggle button when sidebar is collapsed */}
+        {!isSidebarOpen && (
+          <button
+            type="button"
+            ref={assignToggleButtonRef}
+            onClick={handleToggleSidebar}
+            aria-expanded={isSidebarOpen}
+            aria-controls={sidebarId}
+            aria-label={toggleButtonAriaLabel}
+            className="fixed top-28 left-4 z-50 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition-transform duration-300 ease-in-out hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+          >
+            <span aria-hidden>→ Configuration</span>
+          </button>
+        )}
+
         {/* Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[25%_70%] gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
           {/* Left Column - Configuration/Input */}
-          <div className="space-y-6">
-
-            {/* Route Planning Form */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Configuration</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* City Information (Read-only) */}
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Nom de la ville
-                    </label>
-                    <input
-                      type="text"
-                      id="city_name"
-                      value={formData.city_name}
-                      readOnly
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="department_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Numéro de département
-                    </label>
-                    <input
-                      type="text"
-                      id="department_code"
-                      value={formData.department_code}
-                      readOnly
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                {/* Cluster Number */}
-                <div>
-                  <label htmlFor="cluster_count" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre de tournées à planifier: {formData.cluster_count}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="range"
-                      id="cluster_count"
-                      min="1"
-                      max="20"
-                      step="1"
-                      value={formData.cluster_count}
-                      onChange={(e) => handleInputChange('cluster_count', parseInt(e.target.value))}
-                      className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
-                      style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb 100%)`
-                      }}
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <span>1</span>
-                      <span>20</span>
+          <div
+            className={`relative transition-[max-width,width] duration-300 ease-in-out ${isSidebarOpen ? "w-full lg:w-[320px] lg:max-w-[320px]" : "w-0 lg:w-0 lg:max-w-0"}`}
+          >
+            <div className="flex h-full flex-col gap-4">
+              {isSidebarOpen && (
+                <button
+                  type="button"
+                  ref={assignToggleButtonRef}
+                  onClick={handleToggleSidebar}
+                  aria-expanded={isSidebarOpen}
+                  aria-controls={sidebarId}
+                  aria-label={toggleButtonAriaLabel}
+                  className="inline-flex w-fit items-center gap-2 rounded-md border border-transparent bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                >
+                  <span aria-hidden>← Réduire</span>
+                </button>
+              )}
+              <div
+                id={sidebarId}
+                ref={sidebarRef}
+                className={`space-y-6 overflow-hidden transition-opacity duration-300 ease-in-out ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                aria-hidden={!isSidebarOpen}
+              >
+                {/* Route Planning Form */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Configuration</h2>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* City Information (Read-only) */}
+                    <div className="space-y-4">
+                      <div>
+                        <label htmlFor="city_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Nom de la ville
+                        </label>
+                        <input
+                          type="text"
+                          id="city_name"
+                          value={formData.city_name}
+                          readOnly
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="department_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Numéro de département
+                        </label>
+                        <input
+                          type="text"
+                          id="department_code"
+                          value={formData.department_code}
+                          readOnly
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Ajustez le nombre de tournées à planifier pour la planification d&apos;itinéraire (1-20)
-                  </p>
-                </div>
 
-                {/* Clustering Methods */}
-                <div>
-                  <label htmlFor="clustering_method" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Méthode de planification d&apos;itinéraire
-                  </label>
-                  <select
-                    id="clustering_method"
-                    value={formData.clustering_method}
-                    onChange={(e) => handleInputChange('clustering_method', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="balanced_count">Nombre d&apos;adresses équilibré</option>
-                    <option value="balanced_length">Distance équilibrée (km)</option>
-                    <option value="kmeans">Non équilibré</option>
-                  </select>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Sélectionnez l&apos;algorithme de clustering pour l&apos;optimisation des itinéraires
-                  </p>
-                </div>
+                    {/* Cluster Number */}
+                    <div>
+                      <label htmlFor="cluster_count" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Nombre de tournées à planifier: {formData.cluster_count}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="range"
+                          id="cluster_count"
+                          min="1"
+                          max="20"
+                          step="1"
+                          value={formData.cluster_count}
+                          onChange={(e) => handleInputChange('cluster_count', parseInt(e.target.value))}
+                          className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                          style={{
+                            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb ${((formData.cluster_count - 1) / 19) * 100}%, #e5e7eb 100%)`
+                          }}
+                        />
+                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <span>1</span>
+                          <span>20</span>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        Ajustez le nombre de tournées à planifier pour la planification d&apos;itinéraire (1-20)
+                      </p>
+                    </div>
 
-                {/* Submit Button */}
-                <div className="pt-6 border-t border-gray-200 dark:border-gray-600">
-                  <button
-                    type="submit"
-                    disabled={isLoading || !formData.city_name || !formData.department_code}
-                    className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Traitement en cours...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
-                        Planification d&apos;itinéraire
-                      </>
-                    )}
-                  </button>
+                    {/* Clustering Methods */}
+                    <div>
+                      <label htmlFor="clustering_method" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Méthode de planification d&apos;itinéraire
+                      </label>
+                      <select
+                        id="clustering_method"
+                        value={formData.clustering_method}
+                        onChange={(e) => handleInputChange('clustering_method', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="balanced_count">Nombre d&apos;adresses équilibré</option>
+                        <option value="balanced_length">Distance équilibrée (km)</option>
+                        <option value="kmeans">Non équilibré</option>
+                      </select>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Sélectionnez l&apos;algorithme de clustering pour l&apos;optimisation des itinéraires
+                      </p>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="pt-6 border-t border-gray-200 dark:border-gray-600">
+                      <button
+                        type="submit"
+                        disabled={isLoading || !formData.city_name || !formData.department_code}
+                        className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {isLoading ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Traitement en cours...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                            </svg>
+                            Planification d&apos;itinéraire
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 
           {/* Right Column - Output/Map and Stats */}
-          <div className="space-y-6">
+          <div className="flex-1 w-full space-y-6">
             {/* Map Section */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
