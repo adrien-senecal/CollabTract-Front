@@ -383,7 +383,7 @@ function RoutePlanningContent() {
                   
                   <div>
                     <label htmlFor="department_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Code postal
+                      Numéro de département
                     </label>
                     <input
                       type="text"
@@ -398,7 +398,7 @@ function RoutePlanningContent() {
                 {/* Cluster Number */}
                 <div>
                   <label htmlFor="cluster_count" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre de clusters: {formData.cluster_count}
+                    Nombre de tournées à planifier: {formData.cluster_count}
                   </label>
                   <div className="relative">
                     <input
@@ -420,14 +420,14 @@ function RoutePlanningContent() {
                     </div>
                   </div>
                   <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Ajustez le nombre de clusters pour la planification d&apos;itinéraire (1-20)
+                    Ajustez le nombre de tournées à planifier pour la planification d&apos;itinéraire (1-20)
                   </p>
                 </div>
 
                 {/* Clustering Methods */}
                 <div>
                   <label htmlFor="clustering_method" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Méthode de clustering
+                    Méthode de planification d&apos;itinéraire
                   </label>
                   <select
                     id="clustering_method"
